@@ -71,7 +71,7 @@ async function newGame(D1, D2, newHumanId) {
 
    empty(historyDiv);
    if (!(Ds in session)) {
-      let path = "./model_" + Ds[0] + "" + Ds[1] + "_joker.onnx";
+      let path = "models/model_" + Ds[0] + "" + Ds[1] + "_joker.onnx";
       console.log("Loading model " + path);
       addStringToHistory("Loading brain...");
       session[Ds] = await ort.InferenceSession.create(path);
