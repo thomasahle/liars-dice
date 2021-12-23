@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body>
+     <h1>Liar's Dice 🤖</h1>
+    <div class="card elevation" id="main">
+      <table class="card" id="hands">
+         <tr><td>Robot hand:</td><td id="robot-dice" class="hand"></td></tr>
+         <tr><td>Your hand:</td><td id="roll" class="hand"></td></tr>
+      </table>
+      <div id="history-div">
+      </div>
+      <div class="card elevation">
+         <div class='button hidden' id='lie-link'>
+            Challenge last call
+         </div>
+         <div>
+            Your bid:
+         </div>
+         <div id="call-box">
+         </div>
+      </div>
+
+      <div class="card">
+         <span class="link" id="new-button">New Game</span>
+         with
+         <input type="number" value="2" min="1" max="3" size="2" id="size-input" pattern="\d*" inputmode="numeric" />
+         dice
+      </div>
+    </div>
+    <div class="rules">
+      <a href="https://en.wikipedia.org/wiki/Liar%27s_dice#Single_hand">Rules</a>:
+       Each player has a set of dice known only to them.
+       Players take turns bidding on the minimum number of dice that the player believes are showing a given value.
+       The player must bid a higher quantity of any particular face, or the same quantity of a higher face.
+       You may challenge the previous bid, if you don't believe it, or you can't make any higher bids.
+       1s (⚀) are wild and count for every face.
+    </div>
+    <div class="rules">
+       About this project: Made by <a href="https://thomasahle.com">Thomas Dybdahl Ahle</a>. See <a href="https://github.com/thomasahle/snyd">source on GitHub</a>.
+    </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
