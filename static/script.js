@@ -202,6 +202,7 @@ async function addElementToHistory(elem, class_="standard") {
 
    scrollBox(historyDiv, historyDiv.scrollHeight, 500);
 
+   // Wait for animation to complete before doing other things
    await sleep(500);
 }
 
@@ -268,6 +269,8 @@ async function goRobot() {
    }
    else {
       lieLink.classList.remove('hidden');
+      // Make sure showing the lieButton doesn't hide the last call
+      historyDiv.scrollTop = historyDiv.scrollHeight;
    }
 }
 
