@@ -168,6 +168,8 @@ function newDiceIcon(i) {
    const elem = document.createElement("i");
    elem.className = "bi-dice-" + i;
    elem.classList.add("small-dice");
+   if (i == 1)
+      elem.setAttribute("title", "Aces are wild");
    return elem;
 }
 
