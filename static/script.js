@@ -21,8 +21,8 @@ let humanId = 0;
 let privs = [null, null];
 let state = null;
 
-let DEFAULT_SIZE = 3;
-let MAX_SIZE = 4;
+let DEFAULT_SIZE = 4;
+let MAX_SIZE = 5;
 
 const phrases = [
    "I'll say",
@@ -215,10 +215,13 @@ function actionToSpan(prefix, action, postfix) {
       span.appendChild(document.createTextNode(prefix + "liar!" + postfix));
    } else {
       const n = Math.floor(action / SIDES) + 1;
-      const d = (action % SIDES) + 1;
+      let d = (action % SIDES) + 1;
 
-      // Drop the long form "times"
-      //span.appendChild(document.createTextNode(prefix + n + " times "));
+      // If n == 0, the action can be negative, and in javascript (opposed to
+      // in python) the outout of % can be negative.
+      if (d <= 0)
+         d += 6
+
       span.appendChild(document.createTextNode(prefix + n + " "));
       span.appendChild(newDiceIcon(d));
       span.appendChild(document.createTextNode(postfix));
@@ -320,7 +323,14 @@ function endGame(call, isRoboCall) {
    }
    const isGood = actual >= n;
    addElementToHistory(actionToSpan("The call \"", call, "\" was " + isGood + "!"));
-   addElementToHistory(actionToSpan("There were ", (actual-1)*SIDES+d-1, "s in total."));
+
+   const span = document.createElement("span");
+   span.appendChild(document.createTextNode("In total "+actual+" "));
+   span.appendChild(newDiceIcon(d));
+   span.appendChild(document.createTextNode(" including "));
+   span.appendChild(newDiceIcon(1));
+   span.appendChild(document.createTextNode("s."));
+   addElementToHistory(span);
 
    // Reveal robot dice
    empty(robotDiceSpan);

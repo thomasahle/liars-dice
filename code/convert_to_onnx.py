@@ -10,6 +10,7 @@ def main():
     args = parser.parse_args()
 
     for path in args.path:
+        print('Converting', path)
         checkpoint = torch.load(path, map_location=torch.device('cpu'))
         cpargs = checkpoint["args"]
 
@@ -21,7 +22,7 @@ def main():
 
         dummy_priv = torch.zeros(D_PRI)
         dummy_pub = torch.zeros(D_PUB)
-        torch.onnx.export(model, (dummy_priv, dummy_pub), path+'.onnx', verbose=True,
+        torch.onnx.export(model, (dummy_priv, dummy_pub), path+'.onnx',
                         input_names=['priv', 'pub'], output_names=['value'])
 
 
