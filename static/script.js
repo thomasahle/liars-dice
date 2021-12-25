@@ -21,7 +21,7 @@ let humanId = 0;
 let privs = [null, null];
 let state = null;
 
-let DEFAULT_SIZE = 4;
+let DEFAULT_SIZE = 5;
 let MAX_SIZE = 5;
 
 const phrases = [
