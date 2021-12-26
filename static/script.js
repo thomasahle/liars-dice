@@ -357,9 +357,9 @@ function endGame(call, isRoboCall) {
    // If we continue for more rounds
    if (newDs[0] > 0 && newDs[1] > 0) {
       if (robotWon) {
-         addStringToHistory("🤖 wins the round!");
+         addStringToHistory("🤖 wins the round & loses a die!");
       } else {
-         addStringToHistory("🎉 You win the round!");
+         addStringToHistory("🎉 You win the round & lose a die!");
       }
 
       const lastLine = createLastLine("Continue...");
