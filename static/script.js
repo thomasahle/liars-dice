@@ -87,7 +87,6 @@ async function newGame(D1, D2, newHumanId) {
    } else {
       humanId = newHumanId;
    }
-   console.log("Human id: " + humanId);
 
    last_call = -1;
 

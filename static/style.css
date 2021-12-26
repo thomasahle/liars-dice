@@ -52,14 +52,18 @@ body {
 }
 
 h1 {
+   margin: 0;
+   padding: 0;
 }
 
 h2 {
+   margin: 0;
+   padding: 0;
    text-align: right;
 }
 
 .header {
-    padding: 0 10px;
+    padding: 5px 10px;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
