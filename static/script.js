@@ -158,6 +158,7 @@ async function newGame(D1, D2, newHumanId) {
 
 async function newGameClicked() {
    const n = Number.parseInt(sizeInput.value, 10);
+   gtag('event', 'new-game-clicked', {'n': n});
    if (n === undefined || n > MAX_SIZE || n < 1) {
       console.log("Unsupported size", sizeInput.value);
    } else {
@@ -360,8 +361,14 @@ function endGame(call, isRoboCall) {
    if (newDs[0] > 0 && newDs[1] > 0) {
       if (robotWon) {
          addStringToHistory("🤖 wins the round & loses a die!");
+         gtag('event', 'robot_win_round', {
+            'robot_dice': Ds[1-humanId],
+            'human_dice': Ds[humanId]});
       } else {
          addStringToHistory("🎉 You win the round & lose a die!");
+         gtag('event', 'human_win_round', {
+            'robot_dice': Ds[1-humanId],
+            'human_dice': Ds[humanId]});
       }
 
       const lastLine = createLastLine("Continue...");
@@ -381,9 +388,11 @@ function endGame(call, isRoboCall) {
       if (robotWon) {
          addStringToHistory("🤖 wins the game!");
          scores[1] += 1;
+         gtag('event', 'robot_win_game', {});
       } else {
          addStringToHistory("🎉 You win the game!");
          scores[0] += 1;
+         gtag('event', 'human_win_game', {});
       }
       // Update score counter
       empty(score);
