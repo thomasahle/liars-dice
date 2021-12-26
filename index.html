@@ -13,7 +13,10 @@
   </head>
 
   <body>
+     <div class="header">
      <h1>Liar's Dice 🤖</h1>
+     <h2 id="score">Score: 0/0</h2>
+     </div>
     <div class="card elevation" id="main">
       <table class="card" id="hands">
          <tr><td>Robot hand:</td><td id="robot-dice" class="hand"></td></tr>
@@ -42,9 +45,8 @@
     <div class="rules">
       <a href="https://en.wikipedia.org/wiki/Liar%27s_dice#Single_hand">Rules</a>:
        Each player has a set of dice known only to them.
-       Players take turns bidding on the minimum number of dice that the player believes are showing a given value.
-       The player must bid a higher quantity of any particular face, or the same quantity of a higher face.
-       You may challenge the previous bid, if you don't believe it, or you can't make any higher bids.
+       Players take turns guessing on the number of dice that they believe are showing a given face between their two sets of dice.
+       The guesses keep rising (asserting higher quantities or values of the dice) until one player challenges the guess of the previous player.
        1s (⚀) are wild and count for every face.
     </div>
     <div class="rules">

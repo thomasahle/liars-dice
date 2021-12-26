@@ -5,6 +5,7 @@ const rollSpan = document.getElementById("roll");
 const robotDiceSpan = document.getElementById("robot-dice");
 const callBox = document.getElementById("call-box");
 const lieLink = document.getElementById("lie-link");
+const scoreBox = document.getElementById("score");
 
 let Ds = [1, 1];
 const SIDES = 6;
@@ -23,6 +24,8 @@ let state = null;
 
 let DEFAULT_SIZE = 5;
 let MAX_SIZE = 5;
+
+let scores = [0, 0];
 
 const phrases = [
    "I'll say",
@@ -144,7 +147,6 @@ async function newGame(D1, D2, newHumanId) {
          div.addEventListener("click", () => submit(action));
       }
    }
-
 
    if (humanId === 0)
       addStringToHistory("Make your bid!");
@@ -342,8 +344,8 @@ function endGame(call, isRoboCall) {
    for (let i = 0; i < Ds[1-humanId]; i++) {
       robotDiceSpan.appendChild(newDiceIcon(rs[1-humanId][i]));
    }
-   document.querySelectorAll("#hands .bi-dice-1, #hands .bi-dice-"+d).forEach(icon => icon.classList.add("highlight"));
-
+   document.querySelectorAll("#hands .bi-dice-1, #hands .bi-dice-"+d)
+           .forEach(icon => icon.classList.add("highlight"));
 
    // Reduce number of dice for winner
    let newDs = [...Ds];
@@ -378,9 +380,14 @@ function endGame(call, isRoboCall) {
    else {
       if (robotWon) {
          addStringToHistory("🤖 wins the game!");
+         scores[1] += 1;
       } else {
          addStringToHistory("🎉 You win the game!");
+         scores[0] += 1;
       }
+      // Update score counter
+      empty(score);
+      score.appendChild(document.createTextNode("Score: "+scores[0]+"/"+scores[1]));
 
       const newGameLine = createLastLine("New Game");
       newGameLine.addEventListener("click", newGameClicked);
