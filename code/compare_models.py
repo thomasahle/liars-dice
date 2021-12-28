@@ -85,7 +85,7 @@ def run_game(game1, game2):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("paths", type=str, nargs='+', help="Path of models")
-    parser.add_argument("--d", type=int, nargs=2, default=(1,1), help="Number of dice for players")
+    parser.add_argument("--d", type=int, nargs=2, help="Number of dice for players")
     parser.add_argument("--sides", type=int, default=6, help="Number of sides on the dice")
     parser.add_argument("--variant", type=str, default="joker", help="one of normal, joker, stairs")
     parser.add_argument("--N", type=int, default=1000, help="Number of games to run")
