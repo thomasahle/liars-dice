@@ -9,6 +9,8 @@ from collections import Counter
 import argparse
 import re
 from tqdm import tqdm
+import os
+import sys
 
 from snyd import *
 
@@ -35,7 +37,7 @@ def load_models(paths):
                 print(res)
                 return res.value
         else:
-            print('Loading', path)
+            print('Loading', path, file=sys.stderr)
             checkpoint = torch.load(path, map_location=torch.device('cpu'))
             train_args = checkpoint["args"]
             #assert train_args.d1 == args.d[0]
@@ -127,8 +129,9 @@ def main():
                 si, sj = run_game(games[i], games[j])
                 scores[i][j] += si
                 scores[j][i] += sj
-        for row in scores:
-            print(' '.join(map(str, row)))
+        for path, row in zip(args.paths, scores):
+            name = os.path.basename(path)
+            print(name, ' '.join(map(str, row)))
 
 
 if __name__ == '__main__':

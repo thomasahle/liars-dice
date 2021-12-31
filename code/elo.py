@@ -14,7 +14,13 @@ import torch
 import sys
 import math
 
-A = torch.tensor([list(map(float, line.split())) for line in sys.stdin])
+scores = []
+names = []
+for line in sys.stdin:
+    name, *vs = line.split()
+    names.append(name)
+    scores.append(list(map(float, vs)))
+A = torch.tensor(scores)
 N = len(A)
 for i in range(N):
     A[i,i] = 1
@@ -43,6 +49,6 @@ train_lbgfs()
 
 
 res = (elos - torch.min(elos)) * 400*math.log(10.)
-for e in res:
-    print(e.item())
+for name, e in zip(names, res):
+    print(name, e.item())
 
