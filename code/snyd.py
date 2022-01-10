@@ -1,3 +1,7 @@
+"""
+Contains the Game class, as well as various simple netural network architectures.
+"""
+
 import random
 import torch
 from torch import nn
@@ -11,7 +15,7 @@ class Net(torch.nn.Module):
     def __init__(self, d_pri, d_pub):
         super().__init__()
 
-        hiddens = (100,)*4
+        hiddens = (100,) * 4
 
         # Bilinear can't be used inside nn.Sequantial
         # https://github.com/pytorch/pytorch/issues/37092
@@ -34,9 +38,7 @@ class NetConcat(torch.nn.Module):
 
         hiddens = (500, 400, 300, 200, 100)
 
-        layers = [
-                torch.nn.Linear(d_pri+d_pub, hiddens[0]),
-                torch.nn.ReLU()]
+        layers = [torch.nn.Linear(d_pri + d_pub, hiddens[0]), torch.nn.ReLU()]
         for size0, size1 in zip(hiddens, hiddens[1:]):
             layers += [torch.nn.Linear(size0, size1), torch.nn.ReLU()]
         layers += [torch.nn.Linear(hiddens[-1], 1), nn.Tanh()]
@@ -54,16 +56,13 @@ class NetCompBilin(torch.nn.Module):
     def __init__(self, d_pri, d_pub):
         super().__init__()
 
-        hiddens = (100,)*4
+        hiddens = (100,) * 4
 
         middle = 500
         self.layer_pri = torch.nn.Linear(d_pri, middle)
         self.layer_pub = torch.nn.Linear(d_pub, middle)
 
-        layers = [
-                torch.nn.ReLU(),
-                torch.nn.Linear(middle, hiddens[0]),
-                torch.nn.ReLU()]
+        layers = [torch.nn.ReLU(), torch.nn.Linear(middle, hiddens[0]), torch.nn.ReLU()]
         for size0, size1 in zip(hiddens, hiddens[1:]):
             layers += [torch.nn.Linear(size0, size1), torch.nn.ReLU()]
         layers += [torch.nn.Linear(hiddens[-1], 1), nn.Tanh()]
@@ -74,12 +73,11 @@ class NetCompBilin(torch.nn.Module):
         return self.seq(joined)
 
 
-
-
 class Resid(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size):
         super().__init__()
         self.conv = nn.Conv1d(in_channels, out_channels, kernel_size)
+
     def forward(self, x):
         y = self.conv(y)
 
@@ -94,7 +92,7 @@ class Net3(torch.nn.Module):
                 nn.BatchNorm1d(channels),
                 nn.ReLU(),
                 nn.Conv1d(channels, channels, kernel_size=size),
-                nn.BatchNorm1d(channels)
+                nn.BatchNorm1d(channels),
             )
 
         # Bilinear can't be used inside nn.Sequantial
@@ -110,6 +108,7 @@ class Net3(torch.nn.Module):
     def forward(self, priv, pub):
         joined = self.layer0(priv, pub)
         return self.seq(joined)
+
 
 class Net2(torch.nn.Module):
     def __init__(self, d_pri, d_pub):
@@ -144,12 +143,11 @@ class Net2(torch.nn.Module):
             assert len(pub.shape) == 1
             priv = priv.unsqueeze(0)
             pub = pub.unsqueeze(0)
-        #x = self.left(priv.unsqueeze(-2)).squeeze(1) + priv
+        # x = self.left(priv.unsqueeze(-2)).squeeze(1) + priv
         x = priv
         y = self.right(pub.unsqueeze(-2)).squeeze(1) + pub
         mixed = self.bilin(x, y)
         return self.seq(mixed)
-
 
 
 def calc_args(d1, d2, sides, variant):
@@ -200,7 +198,7 @@ class Game:
             self.LIE_ACTION,
             self.CUR_INDEX,
             self.PRI_INDEX,
-            self.D_PUB_PER_PLAYER
+            self.D_PUB_PER_PLAYER,
         ) = calc_args(d1, d2, sides, variant)
 
     def make_regrets(self, priv, state, last_call):
@@ -220,7 +218,7 @@ class Game:
         batch = state.repeat(n_actions + 1, 1)
 
         for i in range(n_actions):
-            self._apply_action(batch[i+1], i+last_call+1)
+            self._apply_action(batch[i + 1], i + last_call + 1)
 
         priv_batch = priv.repeat(n_actions + 1, 1)
 
@@ -261,16 +259,14 @@ class Game:
         for i in range(len(regrets)):
             regrets[i] += eps
         if sum(regrets) <= 0:
-            return [1/len(regrets)] * len(regrets)
+            return [1 / len(regrets)] * len(regrets)
         else:
             s = sum(regrets)
-            return [r/s for r in regrets]
+            return [r / s for r in regrets]
 
     def sample_action(self, priv, state, last_call, eps):
         pi = self.policy(priv, state, last_call, eps)
-        action = next(
-            iter(torch.utils.data.WeightedRandomSampler(pi, num_samples=1))
-        )
+        action = next(iter(torch.utils.data.WeightedRandomSampler(pi, num_samples=1)))
         return action + last_call + 1
 
     def apply_action(self, state, action):
@@ -283,7 +279,7 @@ class Game:
         cur = self.get_cur(state)
         state[action + cur * self.D_PUB_PER_PLAYER] = 1
         state[self.CUR_INDEX + cur * self.D_PUB_PER_PLAYER] = 0
-        state[self.CUR_INDEX + (1-cur) * self.D_PUB_PER_PLAYER] = 1
+        state[self.CUR_INDEX + (1 - cur) * self.D_PUB_PER_PLAYER] = 1
         return state
 
     def make_priv(self, roll, player):
@@ -294,7 +290,7 @@ class Game:
         cnt = Counter(roll)
         for face, c in cnt.items():
             for i in range(c):
-                priv[(face-1) * max(self.D1, self.D2) + i] = 1
+                priv[(face - 1) * max(self.D1, self.D2) + i] = 1
         # Old encoding
         # for i, r in enumerate(roll):
         #     priv[i * self.SIDES + r - 1] = 1
@@ -318,7 +314,10 @@ class Game:
         ]
 
     def get_calls(self, state):
-        merged = state[: self.CUR_INDEX] + state[self.D_PUB_PER_PLAYER : self.D_PUB_PER_PLAYER + self.CUR_INDEX]
+        merged = (
+            state[: self.CUR_INDEX]
+            + state[self.D_PUB_PER_PLAYER : self.D_PUB_PER_PLAYER + self.CUR_INDEX]
+        )
         return (merged == 1).nonzero(as_tuple=True)[0].tolist()
 
     def get_last_call(self, state):
@@ -326,4 +325,3 @@ class Game:
         if not ids:
             return -1
         return int(ids[-1])
-

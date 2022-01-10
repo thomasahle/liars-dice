@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+"""
+Train a new model from self-play.
+"""
+
 import random
 import torch
 from torch import nn
@@ -14,13 +17,23 @@ parser = argparse.ArgumentParser()
 parser.add_argument("d1", type=int, help="Number of dice for player 1")
 parser.add_argument("d2", type=int, help="Number of dice for player 2")
 parser.add_argument("--sides", type=int, default=6, help="Number of sides on the dice")
-parser.add_argument("--variant", type=str, default="normal", help="one of normal, joker, stairs")
-parser.add_argument("--eps", type=float, default=1e-2, help="Added to regrets for exploration")
-parser.add_argument("--layers", type=int, default=4, help="Number of fully connected layers")
-parser.add_argument("--layer-size", type=int, default=100, help="Number of neurons per layer")
+parser.add_argument(
+    "--variant", type=str, default="normal", help="one of normal, joker, stairs"
+)
+parser.add_argument(
+    "--eps", type=float, default=1e-2, help="Added to regrets for exploration"
+)
+parser.add_argument(
+    "--layers", type=int, default=4, help="Number of fully connected layers"
+)
+parser.add_argument(
+    "--layer-size", type=int, default=100, help="Number of neurons per layer"
+)
 parser.add_argument("--lr", type=float, default=1e-3, help="LR = lr/t")
 parser.add_argument("--w", type=float, default=1e-2, help="weight decay")
-parser.add_argument("--path", type=str, default="model.pt", help="Where to save checkpoints")
+parser.add_argument(
+    "--path", type=str, default="model.pt", help="Where to save checkpoints"
+)
 
 args = parser.parse_args()
 
@@ -38,8 +51,8 @@ else:
 # Model : (private state, public state) -> value
 D_PUB, D_PRI, *_ = calc_args(args.d1, args.d2, args.sides, args.variant)
 model = NetConcat(D_PRI, D_PUB)
-#model = Net(D_PRI, D_PUB)
-#model = Net2(D_PRI, D_PUB)
+# model = Net(D_PRI, D_PUB)
+# model = Net2(D_PRI, D_PUB)
 game = Game(model, args.d1, args.d2, args.sides, args.variant)
 
 if checkpoint is not None:
@@ -53,8 +66,7 @@ model.to(device)
 
 @torch.no_grad()
 def play(r1, r2, replay_buffer):
-    privs = [game.make_priv(r1, 0).to(device),
-            game.make_priv(r2, 1).to(device)]
+    privs = [game.make_priv(r1, 0).to(device), game.make_priv(r2, 1).to(device)]
 
     def play_inner(state):
         cur = game.get_cur(state)
@@ -112,26 +124,29 @@ class ReciLR(torch.optim.lr_scheduler._LRScheduler):
         super(ReciLR, self).__init__(optimizer, last_epoch, verbose)
 
     def get_lr(self):
-        return [base_lr / (self.last_epoch + 1)**self.gamma
-                for base_lr, group in zip(self.base_lrs, self.optimizer.param_groups)]
+        return [
+            base_lr / (self.last_epoch + 1) ** self.gamma
+            for base_lr, group in zip(self.base_lrs, self.optimizer.param_groups)
+        ]
 
     def _get_closed_form_lr(self):
-        return [base_lr / (self.last_epoch + 1)**self.gamma for base_lr in self.base_lrs]
-
-
-
+        return [
+            base_lr / (self.last_epoch + 1) ** self.gamma for base_lr in self.base_lrs
+        ]
 
 
 def train():
     optimizer = torch.optim.AdamW(model.parameters(), weight_decay=args.w)
-    scheduler = ReciLR(optimizer, gamma=.5)
+    scheduler = ReciLR(optimizer, gamma=0.5)
     value_loss = torch.nn.MSELoss()
     all_rolls = list(itertools.product(game.rolls(0), game.rolls(1)))
     for t in range(100_000):
         replay_buffer = []
 
         BS = 100  # Number of rolls to include
-        for r1, r2 in (all_rolls if len(all_rolls) <= BS else random.sample(all_rolls, BS)):
+        for r1, r2 in (
+            all_rolls if len(all_rolls) <= BS else random.sample(all_rolls, BS)
+        ):
             play(r1, r2, replay_buffer)
 
         random.shuffle(replay_buffer)
@@ -140,9 +155,6 @@ def train():
         privs = torch.vstack(privs).to(device)
         states = torch.vstack(states).to(device)
         y = torch.tensor(y, dtype=torch.float).reshape(-1, 1).to(device)
-        #privs.to(device)
-        #states.to(device)
-        #privs.to(device)
 
         y_pred = model(privs, states)
 
@@ -171,7 +183,7 @@ def train():
                 },
                 args.path,
             )
-        if (t+1)%1000 == 0:
+        if (t + 1) % 1000 == 0:
             torch.save(
                 {
                     "epoch": t,
@@ -179,9 +191,8 @@ def train():
                     "optimizer_state_dict": optimizer.state_dict(),
                     "args": args,
                 },
-                f'{args.path}.cp{t+1}',
+                f"{args.path}.cp{t+1}",
             )
-
 
 
 train()

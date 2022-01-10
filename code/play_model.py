@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+################################################################################
+# This script allows you to play against the model from the terminal
+################################################################################
+
 import random
 import torch
 from torch import nn
@@ -15,7 +18,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("path", type=str, help="Path of model")
 args = parser.parse_args()
 
-checkpoint = torch.load(args.path, map_location=torch.device('cpu'))
+checkpoint = torch.load(args.path, map_location=torch.device("cpu"))
 train_args = checkpoint["args"]
 
 D_PUB, D_PRI, *_ = calc_args(
@@ -39,7 +42,9 @@ class Human:
                 if action <= last_call:
                     print(f"Can't make that call after {repr_action(last_call)}")
                 elif action >= game.LIE_ACTION:
-                    print(f"The largest call you can make is {repr_action(game.LIE_ACTION-1)}")
+                    print(
+                        f"The largest call you can make is {repr_action(game.LIE_ACTION-1)}"
+                    )
                 else:
                     return action
 
