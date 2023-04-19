@@ -177,18 +177,18 @@ elif args.type == "lbr12":
     data = np.asarray(data)
     xs = data[0, :, 0]
     for i, ax, val in zip(range(2), (ax1, ax2), (-5 / 54, 7 / 27)):
-        ax.plot(xs, data[i, :, 1], color=colors[0], label="Player 1")
-        ax.plot(xs, data[i, :, 2], color=colors[2], label="Player 2")
+        ax.plot(xs, data[i, :, 2], color=colors[0], label="Player 1")
+        ax.plot(xs, data[i, :, 1], color=colors[2], label="Player 2")
         ax.plot(
             xs,
-            [val] * len(xs),
+            [-val] * len(xs),
             label="Player 1, Nash",
             linestyle="dashed",
             color=colors[0],
         )
         ax.plot(
             xs,
-            [-val] * len(xs),
+            [val] * len(xs),
             label="Player 2, Nash",
             linestyle="dashed",
             color=colors[2],
