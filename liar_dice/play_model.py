@@ -2,23 +2,19 @@
 # This script allows you to play against the model from the terminal
 ################################################################################
 
-import random
-import torch
-from torch import nn
-import itertools
-import numpy as np
-import math
-from collections import Counter
 import argparse
+import random
 import re
 
-from snyd import *
+import torch
+
+from liar_dice.snyd import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path", type=str, help="Path of model")
 args = parser.parse_args()
 
-checkpoint = torch.load(args.path, map_location=torch.device("cpu"))
+checkpoint = torch.load(args.path, map_location=torch.device(device="cpu"))  # type: ignore
 train_args = checkpoint["args"]
 
 D_PUB, D_PRI, *_ = calc_args(
@@ -30,7 +26,7 @@ game = Game(model, train_args.d1, train_args.d2, train_args.sides, train_args.va
 
 
 class Human:
-    def get_action(self, state):
+    def get_action(self, state: State) -> int:
         last_call = game.get_last_call(state)
         while True:
             call = input('Your call [e.g. 24 for 2 fours, or "lie" to call a bluff]: ')
@@ -53,10 +49,10 @@ class Human:
 
 
 class Robot:
-    def __init__(self, priv):
+    def __init__(self, priv: Priv):
         self.priv = priv
 
-    def get_action(self, state):
+    def get_action(self, state: State) -> int:
         last_call = game.get_last_call(state)
         return game.sample_action(self.priv, state, last_call, eps=0)
 
@@ -64,7 +60,7 @@ class Robot:
         return "robot"
 
 
-def repr_action(action):
+def repr_action(action: int) -> str:
     action = int(action)
     if action == -1:
         return "nothing"
@@ -77,9 +73,9 @@ def repr_action(action):
 
 while True:
     while (ans := input("Do you want to go first? [y/n/r] ")) not in ["y", "n", "r"]:
-        pass
+        pass  # r: bot vs bot
 
-    r1 = random.choice(list(game.rolls(0)))
+    r1 = random.choice(list(game.rolls(player=0)))
     r2 = random.choice(list(game.rolls(1)))
     privs = [game.make_priv(r1, 0), game.make_priv(r2, 1)]
     state = game.make_state()
@@ -92,10 +88,12 @@ while True:
         players = [Robot(privs[0]), Human()]
     elif ans == "r":
         players = [Robot(privs[0]), Robot(privs[1])]
+    else:
+        raise ValueError(f"Invalid answer: {ans}")
 
     cur = 0
     while True:
-        action = players[cur].get_action(state)
+        action: int = players[cur].get_action(state)
         print()
         print(f"> The {players[cur]} called {repr_action(action)}!")
 
