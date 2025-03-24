@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "liar-dice"
+version = "0.1.0"
+description = ""
+authors = ["PabloLION <36828324+PabloLION@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+torch = "^2.5.0"
+tqdm = "^4.66.5"
+numpy = "^2.1.2"
+scipy = "^1.14.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
