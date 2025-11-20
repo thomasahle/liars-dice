@@ -394,8 +394,8 @@ function endGame(call, isRoboCall) {
          gtag('event', 'human_win_game', {});
       }
       // Update score counter
-      empty(score);
-      score.appendChild(document.createTextNode("Score: "+scores[0]+"/"+scores[1]));
+      empty(scoreBox);
+      scoreBox.appendChild(document.createTextNode("Score: "+scores[0]+"/"+scores[1]));
 
       const newGameLine = createLastLine("New Game");
       newGameLine.addEventListener("click", newGameClicked);
