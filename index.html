@@ -10,8 +10,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <meta content="static/og-image.png" property="og:image">
+   <!-- Google Analytics (GA4). Besides the standard page_view this records the full
+        referrer, its host, the landing page with query string, and any ?ref= tag
+        as event parameters; they are registered on the property as event-scoped
+        custom dimensions (full_referrer, referrer_host, landing_page, ref_tag). -->
    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2L54LD8D49"></script>
-   <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-2L54LD8D49'); </script>
+   <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     gtag('config', 'G-2L54LD8D49', (function () {
+       var ref = document.referrer || '';
+       var host = '';
+       if (ref) {
+         // android-app:// and other odd schemes may not parse; fall back to the raw string.
+         try { host = new URL(ref).hostname || ref; } catch (e) { host = ref; }
+       }
+       var params = {
+         full_referrer: ref || '(direct)',
+         referrer_host: host || '(direct)',
+         landing_page: location.pathname + location.search
+       };
+       var tag = new URLSearchParams(location.search).get('ref');
+       if (tag) { params.ref_tag = tag; }
+       return params;
+     })());
+   </script>
   </head>
 
   <body>
